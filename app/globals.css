@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/* Tokens from design.md §1 */
+@theme {
+  --color-bg: #ffffff;
+  --color-surface: #f4f4f1;
+  --color-ink: #0e0f0c;
+  --color-ink-soft: #5c5d58;
+  --color-ghost: #b9bab4;
+  --color-line: #e4e4df;
+  --color-accent: #e6f23d;
+  --color-accent-ink: #0e0f0c;
+  --color-band: #0e1a14;
+  /* Tints used only inside the dark band */
+  --color-band-line: #24312a;
+  --color-band-soft: #8c948f;
+  --color-band-text: #c9cec9;
+
+  /* The approved preview switches layout at 820px */
+  --breakpoint-md: 51.25rem;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-float: float 5s ease-in-out infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes float {
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+@theme inline {
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Custom cursor and magnetic effects: real pointers only, and never with reduced motion */
+@custom-variant fine {
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  @media (min-width: 51.25rem) {
+    body {
+      font-size: 17px;
+    }
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Anchor targets clear the sticky nav */
+  [id] {
+    scroll-margin-top: 72px;
+  }
+}
+
+/* 1280px column with 32px gutters (16px on mobile) */
+@utility wrap {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 16px;
+
+  @media (min-width: 51.25rem) {
+    padding-inline: 32px;
+  }
+}
+
+/* Labels: "PAPER 01", keywords, eyebrows */
+@utility eyebrow {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+
+/* Section titles: Archivo 800 italic, as in the approved preview */
+@utility h-display {
+  font-weight: 800;
+  font-style: italic;
+  font-size: clamp(36px, 4.4vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+
+/* Links: underline draws left to right */
+@utility link-draw {
+  position: relative;
+  padding-bottom: 3px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease-out-expo);
+  }
+
+  &:hover::after,
+  &:focus-visible::after,
+  &[aria-current="true"]::after {
+    transform: scaleX(1);
+  }
+}
+
+/* First letter capitalised for copy that content.md writes in lower case */
+@utility cap-first {
+  &::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+/*
+ * Reduced motion: scrub, parallax, marquee and cursor effects are off; simple fades stay.
+ * Framer Motion writes inline transforms, so these need !important to win.
+ */
+@media (prefers-reduced-motion: reduce) {
+  [data-motion~="move"] {
+    transform: none !important;
+  }
+
+  [data-motion~="scrub"] {
+    opacity: 1 !important;
+  }
+
+  [data-motion~="loop"] {
+    animation: none !important;
+  }
+}
